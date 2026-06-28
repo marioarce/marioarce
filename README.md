@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Hey-There!-blue) ![Reddit User Karma](https://img.shields.io/reddit/user-karma/combined/marioalbertoarce)
+![Static Badge](https://img.shields.io/badge/Hey-There!-blue)
 
 # Hi, I'm Mario Alberto Arce
 
