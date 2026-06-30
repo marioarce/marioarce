@@ -1,5 +1,7 @@
 # Mario Alberto Arce - GitHub Pages Site
 
+(You can use this README as a template for your own GitHub Pages site)
+
 This is the source for my GitHub Pages site at https://marioarce.github.io
 
 ## Local Development
