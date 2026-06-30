@@ -1,0 +1,67 @@
+title: Mario Alberto Arce
+#email: mario@example.com
+description: >-
+  AWS Cloud Architect & Software Engineer | 20+ years building serverless, 
+  event-driven systems | Founder of PowerCSharp | Sharing architectural patterns, 
+  production-grade code, and deep technical expertise.
+
+baseurl: ""
+url: "https://marioarce.github.io"
+
+author:
+  name: Mario Alberto Arce
+#  email: mario@example.com
+
+social:
+  linkedin: https://www.linkedin.com/in/marioalbertoarce/
+  medium: https://medium.com/@marioarce
+  dev: https://dev.to/marioalbertoarce
+  github: https://github.com/marioarce
+
+theme: minima
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+markdown: kramdown
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+
+permalink: /:categories/:year/:month/:day/:title:output_ext
+
+collections:
+  code_samples:
+    output: true
+    permalink: /code-samples/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Mario Alberto Arce"
+  - scope:
+      path: ""
+      type: "code_samples"
+    values:
+      layout: "code-showcase"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
