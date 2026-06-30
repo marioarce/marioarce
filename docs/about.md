@@ -4,36 +4,53 @@ title: About
 permalink: /about/
 ---
 
-# About Mario Alberto Arce
+# About Me
 
-I'm an **AWS Cloud Architect** with 20+ years in software engineering, mostly focused on **serverless**, **event-driven systems**, **APIs**, and helping teams modernize from **monoliths to microservices**.
+I'm Mario. Been doing this for 20+ years, currently living in the AWS serverless world. 
 
-I like building practical, scalable systems that solve real business problems—and I'm always learning.
+Most of my time goes into event-driven architectures, API design, and helping teams escape monolith hell. You know that moment when you finally decouple a service and everything just... works? That's my jam.
+
+I build stuff that scales, ships, and doesn't wake you up at 3am. Usually.
+
+<p><br></p>
 
 ## What I Work On
 
-- **AWS serverless and event-driven architectures**
-- **Enterprise modernization**
-- **API architecture and distributed systems**
-- **.NET backend platforms**
-- **Observability and performance improvement**
+The usual suspects:
+
+- **AWS serverless & event-driven stuff** — Lambda, EventBridge, Step Functions. The whole shebang.
+- **Killing monoliths** — Helping teams break up that one massive service everyone's afraid to touch.
+- **API design** — Building APIs that don't make you want to flip a table. REST, GraphQL, whatever solves the problem.
+- **.NET backend work** — Still love C#. Fight me.
+- **Observability** — Because "works on my machine" doesn't cut it in prod.
+
+<p><br></p>
 
 ## Open Source
 
-I'm the founder and maintainer of **PowerCSharp**, a .NET open-source ecosystem focused on developer productivity, reusable patterns, and practical engineering solutions.
+I maintain **PowerCSharp**—a .NET ecosystem I built because I got sick of copy-pasting the same utility classes into every project. It's the stuff you wish the BCL had out of the box.
+
+If you've ever written your own retry logic for the 47th time, you'll get why this exists.
+
+<p><br></p>
 
 ## Certifications
 
 - **Sitecore 10 .NET Developer Certification** (2024)
-- Various AWS and cloud architecture certifications
+- AWS and cloud architecture certifications _(details coming soon)_
+
+<p><br></p>
 
 ## A Bit More About Me
 
 Cyclist, marathoner, former triathlete, coffee lover, VW fan, Pink Floyd listener, and audiophile.
 
-- **Marathon PR:** 3h20m
+- **Marathon PR:** 3h20m (Valencia Marathon, 2023)
 - **10K PR:** 39:40
-- **Audio setup:** Pro-Ject Debut PRO S Balanced, Cambridge Audio CXA81 Mk II, ELAC Uni-Fi 2.0 UF52
+
+When I'm not coding or running, you'll find me enjoying my vinyl collection on a Pro-Ject Debut PRO S Balanced through a Cambridge Audio CXA81 Mk II amp and ELAC Uni-Fi 2.0 UF52 speakers. There's something about the warmth of analog sound that just hits different.
+
+<p><br></p>
 
 ## Professional Presence
 
@@ -43,18 +60,25 @@ Cyclist, marathoner, former triathlete, coffee lover, VW fan, Pink Floyd listene
 - **GitHub:** [marioarce](https://github.com/marioarce)
 - **Hashnode Blog:** [My technical blog](https://hashnode.com/@marioarce)
 
-## About This Site
+<p><br></p>
 
-This GitHub Pages site serves as my **technical living lab**—the execution layer of my content ecosystem. Here you'll find:
+## What This Site Is
 
-- Production-grade code samples
-- Architectural blueprints and patterns
-- Interactive proofs-of-concept
-- Deep technical implementations
-- PowerCSharp project documentation
+This is where I dump the real stuff. Not the sanitized LinkedIn version, not the "executive summary" version—the actual code and patterns I use.
 
-The content here is targeted at **Staff Engineers, Engineering Directors, CTOs, and Senior Developers** looking for deeply technical, pragmatic, and authoritative guidance.
+Think of it as:
+- Code you can actually use (production-tested, de-branded, steal-friendly)
+- Architecture patterns from real projects (with the scars to prove it)
+- PoCs and experiments (because sometimes you just need to prove it works)
+- PowerCSharp docs (because README.md only gets you so far)
+
+If you're a Staff Engineer, Tech Lead, or architect who's deep in the trenches—this is for you. We speak the same language here.
+
+<p><br></p>
+<p><br></p>
 
 ---
+
+<p><br></p>
 
 *Last updated: June 2026*

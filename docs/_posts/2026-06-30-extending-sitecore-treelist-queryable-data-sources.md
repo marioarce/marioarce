@@ -9,79 +9,104 @@ excerpt: "A production-ready extension of Sitecore's TreeList field that support
 
 # Extending Sitecore TreeList with Queryable Data Sources and Validation
 
-When building complex Sitecore solutions, the out-of-the-box field types sometimes fall short of specific content authoring requirements. In this post, I'll share a production-grade custom TreeList implementation that adds dynamic query support, template filtering, and validation warnings.
+So here's the thing about Sitecore's out-of-the-box TreeList fields—they're great until they're not. And on this one enterprise project, they definitely weren't cutting it.
 
-## Context & Attribution
+I needed dynamic queries, template filtering, and validation warnings. The kind of stuff that makes content authors' lives easier and prevents 3am "why is this broken?" Slack messages.
 
-This implementation builds upon [Jammy Kam's excellent work](https://jammykam.wordpress.com/2016/01/06/specifying-query-and-parameters-for-sitecore-treelist-field-source/) on queryable TreeList fields. While working on an enterprise Sitecore project, we needed additional capabilities beyond the original implementation to handle more sophisticated content authoring scenarios.
+<p><br></p>
 
-**Sitecore Certification:** Sitecore 10 .NET Developer (2024)
+## Standing on Shoulders
 
----
+Credit where it's due: [Jammy Kam wrote a killer extension](https://jammykam.wordpress.com/2016/01/06/specifying-query-and-parameters-for-sitecore-treelist-field-source/) back in 2016 that handled queryable TreeLists. I was using it on a multi-site Sitecore instance and kept hitting edge cases.
+
+So I forked his approach and extended it. Here's what I added and why.
+
+<p><br></p>
+<p><br></p>
 
 ## The Problem
 
-Standard Sitecore TreeList fields work well for static data sources, but they have limitations:
+Picture this: Multi-site Sitecore instance. Content authors need to pick related articles, but only from their current site. And only certain content types should even show up in the picker.
 
-1. **Static Data Sources Only:** You can't use Sitecore queries to dynamically resolve the tree root
-2. **No Template Filtering:** Limited control over which templates can be displayed vs. selected
-3. **No Validation Feedback:** Content authors don't get warnings when items fall outside the valid selection scope
-4. **Case-Sensitive Template IDs:** Query mismatches due to GUID case inconsistencies
+The vanilla TreeList? Nope. You'd have to either:
+- Hardcode every single path (maintenance nightmare)
+- Create template variations for each site (also a nightmare)
+- Write custom code every time (you know where this is going)
 
-### Real-World Scenario
+And here's the kicker—when content gets moved around (and it always does), authors would select items that were technically invalid. No warnings, no feedback. Just silent failures waiting to explode in production.
 
-Imagine a multi-site Sitecore instance where:
-- Content authors need to select related articles from their current site
-- The selection root should be determined dynamically based on the current item's location
-- Only specific content types should be selectable
-- Authors should be warned if previously selected items are no longer valid
+### What Was Breaking
 
-The standard TreeList can't handle this without hardcoding paths or creating dozens of template variations.
+1. **Static only** — Couldn't use Sitecore queries to figure out the tree root dynamically
+2. **Template filtering was a mess** — No way to say "show these types, but only let them select those types"
+3. **Zero validation** — Authors had no clue when they picked something that was gonna cause problems later
+4. **GUID case sensitivity** — Because nothing says "fun Friday afternoon" like debugging why `{abc-123}` doesn't match `{ABC-123}`
 
----
+<p><br></p>
 
-## The Solution: QueryableTreeList
+## The Fix
 
-I extended the base Sitecore TreeList control to add:
+I extended the base TreeList control and added four things that made life way better:
 
-### 1. Query-Based Data Source Resolution
+### 1. Query-Based Resolution
 
-Support for `query:` syntax in the field source, allowing dynamic resolution:
+Now you can use actual Sitecore queries to figure out where the tree root is:
 
 ```csharp
-// Example field source:
+// Dynamic resolution based on current item
 DataSource=query:./ancestor-or-self::*[@@templateid='{GUID}']/*[@@name='Content']&IncludeTemplatesForSelection={GUID}
 ```
 
-### 2. Template Filtering
+No more hardcoded paths. The query runs in context of the current item, so it adapts automatically.
 
-Separate control over display vs. selection templates:
-- **IncludeTemplatesForDisplay:** Controls which items appear in the tree
-- **IncludeTemplatesForSelection:** Controls which items can actually be selected
+<p><br></p>
+
+### 2. Separate Display vs. Selection Filtering
+
+Sometimes you want authors to see certain items in the tree (for context), but not be able to actually select them.
+
+- **IncludeTemplatesForDisplay** — What shows up in the tree
+- **IncludeTemplatesForSelection** — What they can actually pick
+
+Game changer for complex content hierarchies.
+
+<p><br></p>
 
 ### 3. Validation Warnings
 
-Automatically appends `[Not in selection list]` to items that have been selected but are no longer valid according to the current query.
+Here's my favorite part: If an author has selected something that's no longer valid (because content moved, or the query changed), they get a visual warning.
+
+The field appends `[Not in selection list]` right there in the Content Editor. No more mystery bugs six months later.
+
+<p><br></p>
 
 ### 4. Template ID Normalization
 
-Handles GUID case-sensitivity issues by normalizing all template IDs in queries to uppercase.
+That GUID case sensitivity bug? Fixed. All template IDs get normalized to uppercase before the query runs.
 
----
+Turns out `{abc-123}` and `{ABC-123}` shouldn't be different things. Who knew?
 
-## Technical Deep-Dive
+<p><br></p>
+<p><br></p>
 
-### Architecture
 
-The implementation overrides three key methods from the base `TreeList` control:
+## How It Actually Works
 
-1. **Source Property:** Parses and processes custom parameters
-2. **DataSource Property:** Resolves queries and returns the computed tree root
-3. **GetHeaderValue Method:** Adds validation warnings to invalid selections
+Okay, let's get into the weeds.
 
-### Key Implementation Details
+### The Three Overrides
 
-#### Query Resolution
+I'm hooking into three methods from the base `TreeList`:
+
+1. **Source Property** — Parses the custom parameters (display templates, selection templates, etc.)
+2. **DataSource Property** — This is where the magic happens. Executes the query and figures out the tree root
+3. **GetHeaderValue** — Injects the validation warnings when rendering selected items
+
+Nothing crazy, just strategic override points.
+
+<p><br></p>
+
+### Query Resolution (The Fun Part)
 
 ```csharp
 if (rawSource.StartsWith("query:", StringComparison.OrdinalIgnoreCase))
@@ -102,12 +127,16 @@ if (rawSource.StartsWith("query:", StringComparison.OrdinalIgnoreCase))
 }
 ```
 
-**Why This Matters:**
-- Queries are executed in the context of the current item
-- Template ID normalization prevents case-sensitivity bugs
-- Graceful fallback if query returns no results
+<p><br></p>
 
-#### Validation Logic
+**Why this works:**
+- Query runs in the context of wherever the author is editing—so it's always relative and dynamic
+- The GUID normalization? That's the regex on line 117. Saved me so many headaches
+- If the query bombs or returns nothing, we just bail gracefully. Field still renders, no explosions
+
+<p><br></p>
+
+### Validation Logic
 
 ```csharp
 private bool IsItemInSelectionList(Item item)
@@ -122,12 +151,16 @@ private bool IsItemInSelectionList(Item item)
 }
 ```
 
-**Benefits:**
-- Authors immediately see outdated selections
-- Prevents broken references from content reorganization
-- No silent data quality issues
+<p><br></p>
 
-#### Error Handling
+**What this gives you:**
+- Authors see broken stuff immediately—no surprises during QA
+- When content gets moved (and it will), you'll know about it
+- Zero silent failures. If something's wrong, it screams at you in the UI
+
+<p><br></p>
+
+### Error Handling (Don't Skip This)
 
 ```csharp
 try
@@ -140,89 +173,113 @@ catch (Exception ex)
 }
 ```
 
-**Production Considerations:**
-- Logged errors for debugging malformed queries
-- Graceful degradation—field still renders even if query fails
-- No user-facing exceptions
+**Production reality:**
+- Malformed queries? Logged. You'll see them in your logs, not in production at midnight
+- Field still renders even if the query explodes. Authors can keep working
+- No exceptions bubble up to users. It just... handles it
 
----
+<p><br></p>
+<p><br></p>
 
-## Configuration
+## Setting It Up
 
 ### Step 1: Register the Field Type
 
-Navigate to: `/sitecore/system/Field types/List Types/`
+Head to `/sitecore/system/Field types/List Types/` and create a new field type.
 
-Create a new field type:
+Fill in:
 - **Name:** QueryableTreeList
 - **Assembly:** YourNamespace.Foundation.SitecoreCMS
 - **Class:** YourNamespace.Foundation.SitecoreCMS.Custom.Controls.QueryableTreeList
 - **Control:** YourNamespace:QueryableTreeList
 
-### Step 2: Use in Templates
+Replace `YourNamespace` with your actual namespace (obviously).
 
-Configure your template field source:
+<p><br></p>
+
+### Step 2: Use It
+
+In your template's field source, throw in a query like this:
 
 ```
 DataSource=query:./ancestor-or-self::*[@@templateid='{SITE-TEMPLATE-ID}']/*[@@name='Articles']&IncludeTemplatesForSelection={ARTICLE-TEMPLATE-ID}
 ```
 
-### Step 3: Test
+Swap in your actual template GUIDs. The query syntax is standard Sitecore query—if you've written them before, you're good.
 
-1. Create an item using the template
-2. Open in Content Editor
-3. Verify the TreeList shows the correct root based on the query
-4. Select items and verify validation warnings work
+<p><br></p>
 
----
+### Step 3: Test It
 
-## Trade-offs & Considerations
+1. Create an item with your template
+2. Pop it open in Content Editor
+3. Check that the TreeList shows the right root (based on the query)
+4. Try selecting stuff. Move items around. Verify the warnings show up when they should
+
+<p><br></p>
+<p><br></p>
+
+## The Trade-offs (Because Nothing's Free)
 
 ### Performance
-- **Query Execution:** Each field render executes a Sitecore query. For deeply nested structures, this could impact Content Editor performance.
-- **Mitigation:** Consider caching query results or limiting usage to specific scenarios.
 
-### Complexity
-- **Learning Curve:** Content architects need to understand Sitecore query syntax.
-- **Mitigation:** Document common patterns and provide field source templates.
+Real talk: This runs a query every time the field renders in Content Editor. If you've got deep tree structures or complex queries, it might get sluggish.
 
-### Maintenance
-- **Query Debugging:** Malformed queries fail silently (by design).
-- **Mitigation:** Comprehensive logging helps identify issues quickly.
+**What I did about it:** Used it strategically. Not every TreeList needs this. Pick your battles. You could also cache query results if performance becomes an issue.
 
----
+### Learning Curve
 
-## Production Learnings
+Your content architects need to know Sitecore query syntax. Not everyone does.
 
-After deploying this to a large enterprise Sitecore instance:
+**What helped:** Documented the common patterns. Created a few field source templates they could copy-paste. After that, they were good.
 
-1. **Validation warnings reduced support tickets** by 40%—authors caught issues before publish
-2. **Query flexibility enabled reusable templates** instead of dozens of hardcoded variants
-3. **Template ID normalization eliminated mysterious "empty list" bugs**
-4. **Logging was essential** for debugging complex multi-site query scenarios
+### Debugging
 
----
+Malformed queries fail silently by design (see the error handling above). This is intentional—I'd rather have a field that doesn't populate than one that crashes the Content Editor.
+
+**But:** You need good logging. When queries fail, you'll want to know why. The logger calls saved me multiple times.
+
+<p><br></p>
+<p><br></p>
+
+## What Happened After Shipping It
+
+Deployed this to a big multi-site Sitecore instance. Here's what I learned:
+
+**Support tickets dropped 40%** — Authors were catching their own mistakes before publishing. The validation warnings did exactly what they were supposed to do.
+
+**Templates became reusable** — No more creating variations for every site. One template, dynamic queries, done.
+
+**The GUID normalization thing** — Eliminated a whole category of "why is my list empty?" bugs. Those were a pain to debug before.
+
+**Logging saved my ass** — Multiple times. When someone wrote a bad query, I could see exactly what failed and why. Essential for multi-site setups.
+
+<p><br></p>
+<p><br></p>
 
 ## The Code
 
-Full implementation available in my [GitHub repository](/code-samples/sitecore/QueryableTreeList.cs).
+Grab it from my [GitHub repo](https://github.com/marioarce/marioarce/blob/main/docs/code-samples/sitecore/QueryableTreeList.cs). It's de-branded and ready to drop into your project.
 
-Key features:
-- ✅ Production-tested
-- ✅ Comprehensive error handling
-- ✅ Extensive inline documentation
-- ✅ De-branded and ready to use
-- ✅ Compatible with Sitecore 10+
+What you get:
+- ✅ Tested in production (the real test)
+- ✅ Error handling that doesn't explode
+- ✅ Comments that actually explain why, not what
+- ✅ Works with Sitecore 10+ (maybe earlier, haven't tested)
 
----
+<p><br></p>
+<p><br></p>
 
-## Conclusion
+## Final Thoughts
 
-Custom field types are powerful tools for improving content authoring experiences in Sitecore. This QueryableTreeList implementation solves real-world problems while maintaining code quality, error handling, and performance considerations.
+Look, custom field types aren't always the answer. But when the OOTB stuff doesn't fit? Don't hack around it. Extend it properly.
 
-The key lesson: **Always prioritize author experience and data quality**. Small investments in custom controls pay huge dividends in content governance and support burden reduction.
+This QueryableTreeList solved real problems for real authors. The validation warnings alone paid for the development time within a month.
 
----
+**The lesson:** Invest in author experience. Happy authors = better content = fewer 3am production issues. Simple math.
+
+<p><br></p>
+<p><br></p>
 
 ## Related Resources
 
@@ -230,6 +287,5 @@ The key lesson: **Always prioritize author experience and data quality**. Small 
 - [Sitecore Query Syntax Documentation](https://doc.sitecore.com/xp/en/developers/latest/platform-administration-and-architecture/sitecore-query.html)
 - [Custom Field Types in Sitecore](https://doc.sitecore.com/xp/en/developers/latest/sitecore-experience-manager/custom-field-types.html)
 
----
 
-**Questions or improvements?** Feel free to reach out on [LinkedIn](https://www.linkedin.com/in/marioalbertoarce/) or [GitHub](https://github.com/marioarce).
+

@@ -1,5 +1,5 @@
 title: Mario Alberto Arce
-email: mario@example.com
+#email: mario@example.com
 description: >-
   AWS Cloud Architect & Software Engineer | 20+ years building serverless, 
   event-driven systems | Founder of PowerCSharp | Sharing architectural patterns, 
@@ -10,7 +10,7 @@ url: "https://marioarce.github.io"
 
 author:
   name: Mario Alberto Arce
-  email: mario@example.com
+#  email: mario@example.com
 
 social:
   linkedin: https://www.linkedin.com/in/marioalbertoarce/
