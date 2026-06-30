@@ -5,7 +5,7 @@ title: Home
 
 # Hey There 👋
 
-<img src="/mario-funko.jpeg" alt="Mario Arce" width="200" style="border-radius: 10px; margin: 20px 0;" />
+<img src="{{ site.baseurl }}/mario-funko.jpeg" alt="Mario Arce" width="200" style="border-radius: 10px; margin: 20px 0;" />
 
 I'm **Mario**, and I've been building stuff on the cloud for 20+ years. This is where I share the real code, the actual patterns, and the things that worked (and didn't) in production.
 
