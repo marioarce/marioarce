@@ -20,6 +20,13 @@ I like building practical, scalable systems that solve real business problems �
 
 I'm the founder and maintainer of **PowerCSharp**, a .NET open-source ecosystem focused on developer productivity, reusable patterns, and practical engineering solutions.
 
+## Latest Posts
+
+- **Jun 30, 2026** — [Extending Sitecore TreeList with Queryable Data Sources and Validation](https://marioarce.github.io/marioarce/sitecore/csharp/custom-controls/2026/06/30/extending-sitecore-treelist-queryable-data-sources.html)  
+  A production-ready extension of Sitecore's TreeList field that supports query-based data sources, template filtering, and validation warnings—solving real-world content authoring challenges.
+
+[Check out my GitHub Page](https://marioarce.github.io/marioarce/) — This is where I share the real code, the actual patterns, and the things that worked (and didn't) in production.
+
 ## A bit more about me
 
 Cyclist, marathoner, former triathlete, coffee lover, VW fan, Pink Floyd listener, and audiophile.
